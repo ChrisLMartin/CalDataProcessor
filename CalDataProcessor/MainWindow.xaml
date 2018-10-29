@@ -7,6 +7,30 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Button 
+            Name="BtnSelectFiles" 
+            Click="BtnSelectFiles_Click" 
+            Content="Browse" 
+            HorizontalAlignment="Left" 
+            Margin="190,322,0,0" 
+            Width="75" 
+            Height="20" 
+            VerticalAlignment="Top"/>
+        <ListBox 
+            Name="ListCalFiles"  
+            HorizontalAlignment="Left" 
+            Height="200" 
+            Margin="190,105,0,0" 
+            VerticalAlignment="Top" 
+            Width="350"/>
+        <Button 
+            Name="BtnProcessFiles"
+            Click="BtnProcessFiles_Click"
+            Content="Process" 
+            HorizontalAlignment="Left" 
+            Margin="465,322,0,0" 
+            VerticalAlignment="Top" 
+            Width="75"/>
+
     </Grid>
 </Window>

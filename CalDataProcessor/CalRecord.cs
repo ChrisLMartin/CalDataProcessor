@@ -13,17 +13,19 @@ namespace CalDataProcessor
         public DataTable ParameterTable { get; set; }
         public DataTable ValuesTable { get; set; }
 
-        public CalRecord()
-        {
-
-        }
-
         public CalRecord(string filename)
         {
-            ParameterTable = new DataTable();
-            ParameterTable.Columns.Add("Name");
-            ParameterTable.Columns.Add("Value");
-            ValuesTable = new DataTable();
+            this.ParameterTable = GenerateParameterTable(filename);
+            this.ValuesTable = GenerateValuesTable(filename);
+            
+        }
+
+        private DataTable GenerateParameterTable(string filename)
+        {
+            DataTable parameterTable = new DataTable();
+            parameterTable.Columns.Add("Name");
+            parameterTable.Columns.Add("Value");
+
             StreamReader reader = new StreamReader(filename);
             char[] delimeter = new char[] { '\t' };
 
@@ -32,20 +34,36 @@ namespace CalDataProcessor
             string line;
             while ((line = reader.ReadLine()) != "")
             {
-                DataRow row = ParameterTable.NewRow();
+                DataRow row = parameterTable.NewRow();
                 row.ItemArray = line.Split(delimeter);
-                ParameterTable.Rows.Add(row);
+                parameterTable.Rows.Add(row);
             }
 
             // Transpose parameters table so parameter names are headers
-            ParameterTable = GenerateTransposedTable(ParameterTable);
-            ParameterTable.Columns.Remove("Name");
+            parameterTable = GenerateTransposedTable(parameterTable);
+            parameterTable.Columns.Remove("Name");
+
+            return parameterTable;
+        }
+
+        private DataTable GenerateValuesTable(string filename)
+        {
+            DataTable valuesTable = new DataTable();
+
+            StreamReader reader = new StreamReader(filename);
+            char[] delimeter = new char[] { '\t' };
+
+            string line;
+            while ((line = reader.ReadLine()) != "")
+            {
+
+            }
 
             // Read headers into values table
             string[] columnHeaders = reader.ReadLine().Split(delimeter);
             foreach (string columnHeader in columnHeaders)
             {
-                ValuesTable.Columns.Add(columnHeader);
+                valuesTable.Columns.Add(columnHeader);
             }
 
             // Read empty line between headers and values
@@ -54,12 +72,12 @@ namespace CalDataProcessor
             // Read values into table until end of file.
             while ((line = reader.ReadLine()) != null)
             {
-                DataRow row = ValuesTable.NewRow();
+                DataRow row = valuesTable.NewRow();
                 row.ItemArray = line.Split(delimeter);
-                ValuesTable.Rows.Add(row);
+                valuesTable.Rows.Add(row);
             }
 
-            
+            return valuesTable;
         }
 
         private DataTable GenerateTransposedTable(DataTable inputTable)
@@ -95,5 +113,6 @@ namespace CalDataProcessor
 
             return outputTable;
         }
+
     }
 }

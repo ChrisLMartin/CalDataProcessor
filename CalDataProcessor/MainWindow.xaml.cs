@@ -52,17 +52,19 @@ namespace CalDataProcessor
         /// <param name="e"></param>
         private void BtnProcessFiles_Click(object sender, RoutedEventArgs e)
         {
-            DataTable parameters = new DataTable();
-            DataTable values = new DataTable();
+            CalRecordRepository repository = new CalRecordRepository(Filenames);
 
-            foreach (string filename in Filenames)
-            {
-                CalRecord record = new CalRecord(filename);
-                parameters = record.ParameterTable;
-                values = record.ValuesTable;
-            }
-            DisplayParametersWindow parametersWindow = new DisplayParametersWindow(parameters, values);
-            parametersWindow.Show();
+            //DataTable parameters = new DataTable();
+            //DataTable values = new DataTable();
+
+            //foreach (string filename in Filenames)
+            //{
+            //    CalRecord record = new CalRecord(filename);
+            //    parameters = record.ParameterTable;
+            //    values = record.ValuesTable;
+            //}
+            //DisplayParametersWindow parametersWindow = new DisplayParametersWindow(parameters, values);
+            //parametersWindow.Show();
         }
     }
 }

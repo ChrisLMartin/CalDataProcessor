@@ -68,6 +68,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CalRecord.cs" />
+    <Compile Include="CalRecordRepository.cs" />
     <Compile Include="DisplayParametersWindow.xaml.cs">
       <DependentUpon>DisplayParametersWindow.xaml</DependentUpon>
     </Compile>

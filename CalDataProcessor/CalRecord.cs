@@ -10,14 +10,75 @@ namespace CalDataProcessor
 {
     class CalRecord
     {
-        public DataTable ParameterTable { get; set; }
-        public DataTable ValuesTable { get; set; }
+        public DataTable ParameterTable { get; private set; }
+        public DataTable ValuesTable { get; private set; }
+        public string SampleType { get; private set; }
+        public float BinderMass { get; private set; }
+
 
         public CalRecord(string filename)
         {
+            // Create the DataTable of parameters and values, and set an empty SampleType
             this.ParameterTable = GenerateParameterTable(filename);
             this.ValuesTable = GenerateValuesTable(filename);
-            
+            this.SampleType = "";
+
+            this.CheckSampleType(filename);
+            this.BinderMass = this.CalculateBinderMass();
+        }
+
+        private float CalculateBinderMass()
+        {
+            float sampleMass = float.TryParse(ParameterTable.Rows[0]["Sample Mass, g"].ToString(), out sampleMass) ? sampleMass : 0;
+            float cementMass = float.TryParse(ParameterTable.Rows[0]["Cement Mass, g"].ToString(), out cementMass) ? cementMass : 0;
+            float slagMass = float.TryParse(ParameterTable.Rows[0]["Suppl 1 Mass, g"].ToString(), out slagMass) ? slagMass : 0;
+            float flyashMass = float.TryParse(ParameterTable.Rows[0]["Suppl 2 Mass, g"].ToString(), out flyashMass) ? flyashMass : 0;
+            float waterMass = float.TryParse(ParameterTable.Rows[0]["Water Mass, g"].ToString(), out waterMass) ? waterMass : 0;
+            float aggregateMass = float.TryParse(ParameterTable.Rows[0]["Aggr Mass, g"].ToString(), out aggregateMass) ? aggregateMass : 0;
+
+            float binderMass = (cementMass + slagMass + flyashMass) / 
+                (cementMass + slagMass + flyashMass + waterMass + aggregateMass) *
+                sampleMass;
+
+            return binderMass;
+        }
+
+        private void CheckSampleType(string filename)
+        {
+            // Get the start of the file name, which is the sample name
+            // EFC sample names should start with full year i.e. 2018
+            // OPC sample names should start with abbreviated year i.e. 18
+            string yearStart = Path.GetFileNameWithoutExtension(filename).Substring(0, 2);
+
+            // Get the actual year to compare the sample name to
+            string year = DateTime.Now.Year.ToString();
+
+            // Dictionary that equates sample name to sample type 
+            Dictionary<string, string> sampleTypeOptions = new Dictionary<string, string>()
+            {
+                // "20"
+                { year.Substring(0,2), "EFC" },
+                // currently "18"
+                { year.Substring(2,2), "OPC" }
+            };
+
+            // Check that the sample name actually starts with one of the options "20" or "18" (currently)
+            if (sampleTypeOptions.ContainsKey(yearStart))
+            {
+                this.SampleType = sampleTypeOptions[yearStart];
+            }
+            // Otherwise create a dialog requesting sample type input
+            else
+            {
+                SampleTypeDialog check = new SampleTypeDialog(Path.GetFileNameWithoutExtension(filename));
+
+                Nullable<bool> result = check.ShowDialog();
+
+                if (result == true)
+                {
+                    this.SampleType = check.SampleType;
+                }
+            }
         }
 
         private DataTable GenerateParameterTable(string filename)
@@ -53,11 +114,9 @@ namespace CalDataProcessor
             StreamReader reader = new StreamReader(filename);
             char[] delimeter = new char[] { '\t' };
 
+            // Read through CSV until values
             string line;
-            while ((line = reader.ReadLine()) != "")
-            {
-
-            }
+            while ((line = reader.ReadLine()) != "") { }
 
             // Read headers into values table
             string[] columnHeaders = reader.ReadLine().Split(delimeter);

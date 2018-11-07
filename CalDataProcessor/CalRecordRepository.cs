@@ -17,7 +17,7 @@ namespace CalDataProcessor
         public CalRecordRepository(string[] filenames)
         {
 
-            CalValuesDictionary = new Dictionary<string, DataTable>();
+            this.CalValuesDictionary = new Dictionary<string, DataTable>();
 
             // For each of the TSV calorimetry files
             foreach (string filename in filenames)
@@ -26,19 +26,19 @@ namespace CalDataProcessor
                 CalRecord record = new CalRecord(filename);
 
                 // Copy the structure of the first parameter table
-                if (ParameterTable == null)
+                if (this.ParameterTable == null)
                 {
-                    ParameterTable = record.ParameterTable.Clone();
+                    this.ParameterTable = record.ParameterTable.Clone();
                 }
 
                 // Copy the single row from the record table into the combined repository table
                 foreach (DataRow row in record.ParameterTable.Rows)
                 {
-                    ParameterTable.Rows.Add(row.ItemArray);
+                    this.ParameterTable.Rows.Add(row.ItemArray);
                 }
 
                 // Store values in dictionary with Sample ID as key
-                CalValuesDictionary[record.ParameterTable.Rows[0]["Sample ID"].ToString()] = record.ValuesTable;
+                this.CalValuesDictionary[record.ParameterTable.Rows[0]["Sample ID"].ToString()] = record.ValuesTable;
             }
 
         }
